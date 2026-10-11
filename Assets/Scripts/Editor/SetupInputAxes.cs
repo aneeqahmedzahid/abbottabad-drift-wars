@@ -31,8 +31,8 @@ public class SetupInputAxes
             for (int i = 0; i < axesProperty.arraySize; i++)
             {
                 var axis = axesProperty.GetArrayElementAtIndex(i);
-                var axisName = axis.FindPropertyRelative("m_Name").stringValue;
-                if (axisName == name)
+                var axisNameProp = axis.FindPropertyRelative("m_Name");
+                if (axisNameProp != null && axisNameProp.stringValue == name)
                 {
                     exists = true;
                     break;
@@ -43,19 +43,39 @@ public class SetupInputAxes
             {
                 int index = axesProperty.arraySize;
                 axesProperty.InsertArrayElementAtIndex(index);
+                
+                // Force update to ensure the new element is properly initialized
+                serializedObject.ApplyModifiedProperties();
+                serializedObject.Update();
+                
                 var axis = axesProperty.GetArrayElementAtIndex(index);
-                axis.FindPropertyRelative("m_Name").stringValue = name;
-                axis.FindPropertyRelative("m_PositiveButton").stringValue = positiveButton;
-                axis.FindPropertyRelative("m_NegativeButton").stringValue = negativeButton;
-                axis.FindPropertyRelative("m_AltPositiveButton").stringValue = altPositiveButton;
-                axis.FindPropertyRelative("m_AltNegativeButton").stringValue = altNegativeButton;
-                axis.FindPropertyRelative("m_Gravity").floatValue = gravity;
-                axis.FindPropertyRelative("m_Dead").floatValue = dead;
-                axis.FindPropertyRelative("m_Sensitivity").floatValue = sensitivity;
-                axis.FindPropertyRelative("m_Snap").boolValue = snap;
-                axis.FindPropertyRelative("m_Type").intValue = 0; // Key or Mouse Button
-                axis.FindPropertyRelative("m_Axis").intValue = 0;
-                axis.FindPropertyRelative("m_JoyNum").intValue = 0;
+                
+                var nameProp = axis.FindPropertyRelative("m_Name");
+                var posBtnProp = axis.FindPropertyRelative("m_PositiveButton");
+                var negBtnProp = axis.FindPropertyRelative("m_NegativeButton");
+                var altPosBtnProp = axis.FindPropertyRelative("m_AltPositiveButton");
+                var altNegBtnProp = axis.FindPropertyRelative("m_AltNegativeButton");
+                var gravityProp = axis.FindPropertyRelative("m_Gravity");
+                var deadProp = axis.FindPropertyRelative("m_Dead");
+                var sensitivityProp = axis.FindPropertyRelative("m_Sensitivity");
+                var snapProp = axis.FindPropertyRelative("m_Snap");
+                var typeProp = axis.FindPropertyRelative("m_Type");
+                var axisProp = axis.FindPropertyRelative("m_Axis");
+                var joyNumProp = axis.FindPropertyRelative("m_JoyNum");
+
+                if (nameProp != null) nameProp.stringValue = name;
+                if (posBtnProp != null) posBtnProp.stringValue = positiveButton;
+                if (negBtnProp != null) negBtnProp.stringValue = negativeButton;
+                if (altPosBtnProp != null) altPosBtnProp.stringValue = altPositiveButton;
+                if (altNegBtnProp != null) altNegBtnProp.stringValue = altNegativeButton;
+                if (gravityProp != null) gravityProp.floatValue = gravity;
+                if (deadProp != null) deadProp.floatValue = dead;
+                if (sensitivityProp != null) sensitivityProp.floatValue = sensitivity;
+                if (snapProp != null) snapProp.boolValue = snap;
+                if (typeProp != null) typeProp.intValue = 0;
+                if (axisProp != null) axisProp.intValue = 0;
+                if (joyNumProp != null) joyNumProp.intValue = 0;
+
                 Debug.Log($"Added input axis: {name}");
             }
             else
