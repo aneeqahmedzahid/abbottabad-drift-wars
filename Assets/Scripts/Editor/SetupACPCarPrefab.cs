@@ -88,7 +88,7 @@ public class SetupACPCarPrefab
         // Set turn input curve (private field)
         SetPrivateField(wheelVehicle, "turnInputCurve", AnimationCurve.Linear(-1.0f, -1.0f, 1.0f, 1.0f));
 
-        // Create VehicleInputs asset
+        // Create VehicleInputs asset (must be saved as asset to persist in prefab)
         var inputs = ScriptableObject.CreateInstance<VehicleInputs>();
         inputs.ThrottleInput = "Vertical";
         inputs.BrakeInput = "Brake";
@@ -96,6 +96,11 @@ public class SetupACPCarPrefab
         inputs.JumpInput = "Jump";
         inputs.DriftInput = "Handbrake";
         inputs.BoostInput = "Boost";
+        
+        string inputsPath = "Assets/Prefabs/VehicleInputs.asset";
+        AssetDatabase.CreateAsset(inputs, inputsPath);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
 
         // Set the inputs reference
         SetPrivateField(wheelVehicle, "m_Inputs", inputs);

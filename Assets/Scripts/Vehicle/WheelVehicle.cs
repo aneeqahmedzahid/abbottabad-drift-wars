@@ -28,12 +28,12 @@ namespace VehicleBehaviour {
 
         // Input names to read using GetAxis
         [SerializeField] internal VehicleInputs m_Inputs;
-        string throttleInput => m_Inputs.ThrottleInput;
-        string brakeInput => m_Inputs.BrakeInput;
-        string turnInput => m_Inputs.TurnInput;
-        string jumpInput => m_Inputs.JumpInput;
-        string driftInput => m_Inputs.DriftInput;
-	    string boostInput => m_Inputs.BoostInput;
+        string throttleInput => m_Inputs != null ? m_Inputs.ThrottleInput : "Vertical";
+        string brakeInput => m_Inputs != null ? m_Inputs.BrakeInput : "Brake";
+        string turnInput => m_Inputs != null ? m_Inputs.TurnInput : "Horizontal";
+        string jumpInput => m_Inputs != null ? m_Inputs.JumpInput : "Jump";
+        string driftInput => m_Inputs != null ? m_Inputs.DriftInput : "Handbrake";
+	    string boostInput => m_Inputs != null ? m_Inputs.BoostInput : "Boost";
         
         /* 
          *  Turn input curve: x real input, y value used
