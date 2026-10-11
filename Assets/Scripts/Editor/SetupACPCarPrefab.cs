@@ -48,8 +48,8 @@ public class SetupACPCarPrefab
         // Rigidbody
         var rb = car.AddComponent<Rigidbody>();
         rb.mass = 1150f;
-        rb.drag = 0.05f;
-        rb.angularDrag = 0.5f;
+        rb.linearDamping = 0.05f;
+        rb.angularDamping = 0.5f;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 

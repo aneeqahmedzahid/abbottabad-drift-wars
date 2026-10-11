@@ -6,8 +6,21 @@ public class SetupInputAxes
     [MenuItem("Tools/Setup ACP Input Axes")]
     public static void AddInputAxes()
     {
-        SerializedObject serializedObject = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset")[0]);
+        var inputManager = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset");
+        if (inputManager.Length == 0)
+        {
+            Debug.LogError("Could not find InputManager.asset");
+            return;
+        }
+
+        SerializedObject serializedObject = new SerializedObject(inputManager[0]);
         SerializedProperty axesProperty = serializedObject.FindProperty("m_Axes");
+
+        if (axesProperty == null)
+        {
+            Debug.LogError("Could not find m_Axes property in InputManager");
+            return;
+        }
 
         // Helper to add an axis if it doesn't exist
         System.Action<string, string, string, string, string, float, float, float, bool> AddAxis = 
