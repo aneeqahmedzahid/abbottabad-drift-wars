@@ -59,9 +59,9 @@ public class SetupACPCarPrefab
         // Add WheelVehicle (main ACP script)
         var wheelVehicle = car.AddComponent<WheelVehicle>();
 
-        // Wire up wheels
-        wheelVehicle.driveWheel = new WheelCollider[] { wcRL, wcRR }; // RWD
-        wheelVehicle.turnWheel = new WheelCollider[] { wcFL, wcFR };  // Front steering
+        // Wire up wheels using properties (not fields)
+        wheelVehicle.DriveWheel = new WheelCollider[] { wcRL, wcRR }; // RWD
+        wheelVehicle.TurnWheel = new WheelCollider[] { wcFL, wcFR };  // Front steering
 
         // Set center of mass
         var centerOfMassField = typeof(WheelVehicle).GetField("centerOfMass", 
@@ -78,14 +78,14 @@ public class SetupACPCarPrefab
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         motorTorqueField?.SetValue(wheelVehicle, motorTorqueCurve);
 
-        // Set other parameters
-        wheelVehicle.diffGearing = 4.0f;
-        wheelVehicle.brakeForce = 1500f;
-        wheelVehicle.steerAngle = 32f;
-        wheelVehicle.steerSpeed = 0.15f;
-        wheelVehicle.jumpVel = 1.3f;
-        wheelVehicle.driftIntensity = 1f;
-        wheelVehicle.downforce = 2f;
+        // Set other parameters using properties
+        wheelVehicle.DiffGearing = 4.0f;
+        wheelVehicle.BrakeForce = 1500f;
+        wheelVehicle.SteerAngle = 32f;
+        wheelVehicle.SteerSpeed = 0.15f;
+        wheelVehicle.JumpVel = 1.3f;
+        wheelVehicle.DriftIntensity = 1f;
+        wheelVehicle.Downforce = 2f;
         wheelVehicle.allowDrift = true;
         wheelVehicle.allowBoost = false; // Disable boost for now
 
@@ -122,7 +122,7 @@ public class SetupACPCarPrefab
         AssetDatabase.Refresh();
     }
 
-    static GameObject CreateWheel(string name, Transform parent, Vector3 localPos, bool isFront, bool isDrive)
+    static WheelCollider CreateWheel(string name, Transform parent, Vector3 localPos, bool isFront, bool isDrive)
     {
         var wheelGO = new GameObject(name);
         wheelGO.transform.SetParent(parent);
@@ -162,7 +162,7 @@ public class SetupACPCarPrefab
         suspension.wheelModel = meshParent;
         suspension.localRotOffset = new Vector3(0, 0, 0);
 
-        return wheelGO;
+        return wc;
     }
 
     static void SetLayerRecursive(GameObject obj, int layer)

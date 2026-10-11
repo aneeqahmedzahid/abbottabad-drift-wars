@@ -263,7 +263,7 @@ namespace VehicleBehaviour {
         // Update everything
         void FixedUpdate () {
             // Mesure current speed
-            speed = transform.InverseTransformDirection(rb.velocity).z * 3.6f;
+            speed = transform.InverseTransformDirection(rb.linearVelocity).z * 3.6f;
 
             // Get all the inputs!
             if (isPlayer) {
@@ -277,7 +277,7 @@ namespace VehicleBehaviour {
                 // Turn
                 steering = turnInputCurve.Evaluate(GetInput(turnInput)) * steerAngle;
                 // Drift
-                drift = GetInput(driftInput) > 0 && rb.velocity.sqrMagnitude > 100;
+                drift = GetInput(driftInput) > 0 && rb.linearVelocity.sqrMagnitude > 100;
                 // Jump
                 jumping = GetInput(jumpInput) != 0;
             }
@@ -324,7 +324,7 @@ namespace VehicleBehaviour {
                 if (!IsGrounded)
                     return;
                 
-                rb.velocity += transform.up * jumpVel;
+                rb.linearVelocity += transform.up * jumpVel;
             }
 
             // Boost
@@ -379,7 +379,7 @@ namespace VehicleBehaviour {
             transform.position = spawnPosition;
             transform.rotation = spawnRotation;
 
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
 

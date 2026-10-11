@@ -10,8 +10,8 @@ public class SetupInputAxes
         SerializedProperty axesProperty = serializedObject.FindProperty("m_Axes");
 
         // Helper to add an axis if it doesn't exist
-        System.Action<string, string, string, string, float, float, float, float, string> AddAxis = 
-            (name, positiveButton, negativeButton, altPositiveButton, altNegativeButton, gravity, dead, sensitivity, snap, type) => 
+        System.Action<string, string, string, string, string, float, float, float, bool> AddAxis = 
+            (name, positiveButton, negativeButton, altPositiveButton, altNegativeButton, gravity, dead, sensitivity, snap) => 
         {
             // Check if axis exists
             bool exists = false;
@@ -39,7 +39,7 @@ public class SetupInputAxes
                 axis.FindPropertyRelative("m_Gravity").floatValue = gravity;
                 axis.FindPropertyRelative("m_Dead").floatValue = dead;
                 axis.FindPropertyRelative("m_Sensitivity").floatValue = sensitivity;
-                axis.FindPropertyRelative("m_Snap").boolValue = snap == "true";
+                axis.FindPropertyRelative("m_Snap").boolValue = snap;
                 axis.FindPropertyRelative("m_Type").intValue = 0; // Key or Mouse Button
                 axis.FindPropertyRelative("m_Axis").intValue = 0;
                 axis.FindPropertyRelative("m_JoyNum").intValue = 0;
@@ -52,13 +52,13 @@ public class SetupInputAxes
         };
 
         // Add required axes for ACP
-        AddAxis("Vertical", "w", "s", "up", "down", 3, 0.001f, 3, "true", "");
-        AddAxis("Horizontal", "d", "a", "right", "left", 3, 0.001f, 3, "true", "");
-        AddAxis("Brake", "space", "", "", "", 3, 0.001f, 3, "false", "");
-        AddAxis("Jump", "space", "", "", "", 3, 0.001f, 3, "false", "");
-        AddAxis("Handbrake", "space", "", "", "", 3, 0.001f, 3, "false", "");
-        AddAxis("Drift", "left shift", "", "", "", 3, 0.001f, 3, "false", "");
-        AddAxis("Boost", "left ctrl", "", "", "", 3, 0.001f, 3, "false", "");
+        AddAxis("Vertical", "w", "s", "up", "down", 3, 0.001f, 3, true);
+        AddAxis("Horizontal", "d", "a", "right", "left", 3, 0.001f, 3, true);
+        AddAxis("Brake", "space", "", "", "", 3, 0.001f, 3, false);
+        AddAxis("Jump", "space", "", "", "", 3, 0.001f, 3, false);
+        AddAxis("Handbrake", "space", "", "", "", 3, 0.001f, 3, false);
+        AddAxis("Drift", "left shift", "", "", "", 3, 0.001f, 3, false);
+        AddAxis("Boost", "left ctrl", "", "", "", 3, 0.001f, 3, false);
 
         serializedObject.ApplyModifiedProperties();
         AssetDatabase.Refresh();
