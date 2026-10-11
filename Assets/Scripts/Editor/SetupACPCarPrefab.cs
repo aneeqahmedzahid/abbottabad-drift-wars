@@ -59,14 +59,12 @@ public class SetupACPCarPrefab
         // Add WheelVehicle (main ACP script)
         var wheelVehicle = car.AddComponent<WheelVehicle>();
 
-        // Wire up wheels using properties (not fields)
-        wheelVehicle.DriveWheel = new WheelCollider[] { wcRL, wcRR }; // RWD
-        wheelVehicle.TurnWheel = new WheelCollider[] { wcFL, wcFR };  // Front steering
+        // Wire up wheels using reflection (properties are read-only)
+        SetPrivateField(wheelVehicle, "driveWheel", new WheelCollider[] { wcRL, wcRR }); // RWD
+        SetPrivateField(wheelVehicle, "turnWheel", new WheelCollider[] { wcFL, wcFR });  // Front steering
 
         // Set center of mass
-        var centerOfMassField = typeof(WheelVehicle).GetField("centerOfMass", 
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        centerOfMassField?.SetValue(wheelVehicle, com.transform);
+        SetPrivateField(wheelVehicle, "centerOfMass", com.transform);
 
         // Set motor torque curve (AnimationCurve)
         var motorTorqueCurve = new AnimationCurve(
@@ -74,11 +72,9 @@ public class SetupACPCarPrefab
             new Keyframe(50, 300),
             new Keyframe(200, 0)
         );
-        var motorTorqueField = typeof(WheelVehicle).GetField("motorTorque", 
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        motorTorqueField?.SetValue(wheelVehicle, motorTorqueCurve);
+        SetPrivateField(wheelVehicle, "motorTorque", motorTorqueCurve);
 
-        // Set other parameters using properties
+        // Set other parameters using properties (these have setters)
         wheelVehicle.DiffGearing = 4.0f;
         wheelVehicle.BrakeForce = 1500f;
         wheelVehicle.SteerAngle = 32f;
@@ -89,8 +85,8 @@ public class SetupACPCarPrefab
         wheelVehicle.allowDrift = true;
         wheelVehicle.allowBoost = false; // Disable boost for now
 
-        // Set turn input curve (more responsive at low input, smooth at high)
-        wheelVehicle.turnInputCurve = AnimationCurve.Linear(-1.0f, -1.0f, 1.0f, 1.0f);
+        // Set turn input curve (private field)
+        SetPrivateField(wheelVehicle, "turnInputCurve", AnimationCurve.Linear(-1.0f, -1.0f, 1.0f, 1.0f));
 
         // Create VehicleInputs asset
         var inputs = ScriptableObject.CreateInstance<VehicleInputs>();
@@ -102,9 +98,7 @@ public class SetupACPCarPrefab
         inputs.BoostInput = "Boost";
 
         // Set the inputs reference
-        var inputsField = typeof(WheelVehicle).GetField("m_Inputs", 
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        inputsField?.SetValue(wheelVehicle, inputs);
+        SetPrivateField(wheelVehicle, "m_Inputs", inputs);
 
         // Add EngineSoundManager
         var audioSource = car.AddComponent<AudioSource>();
@@ -120,6 +114,20 @@ public class SetupACPCarPrefab
         Object.DestroyImmediate(car);
 
         AssetDatabase.Refresh();
+    }
+
+    static void SetPrivateField(object obj, string fieldName, object value)
+    {
+        var field = obj.GetType().GetField(fieldName, 
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+        if (field != null)
+        {
+            field.SetValue(obj, value);
+        }
+        else
+        {
+            Debug.LogWarning($"Field '{fieldName}' not found on {obj.GetType().Name}");
+        }
     }
 
     static WheelCollider CreateWheel(string name, Transform parent, Vector3 localPos, bool isFront, bool isDrive)
