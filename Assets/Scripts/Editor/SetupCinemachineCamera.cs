@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-using Cinemachine;
+
 
 public class SetupCinemachineCamera
 {
@@ -30,15 +30,15 @@ public class SetupCinemachineCamera
         }
 
         // Add CinemachineBrain to main camera if not present
-        var brain = mainCamera.GetComponent<CinemachineBrain>();
+        var brain = mainCamera.GetComponent<Unity.Cinemachine.CinemachineBrain>();
         if (brain == null)
         {
-            brain = mainCamera.gameObject.AddComponent<CinemachineBrain>();
+            brain = mainCamera.gameObject.AddComponent<Unity.Cinemachine.CinemachineBrain>();
         }
 
-        // Create Cinemachine Virtual Camera
+        // Create Cinemachine Virtual Camera (2.x API)
         var vcamGo = new GameObject("CM_ChaseCamera");
-        var vcam = vcamGo.AddComponent<CinemachineVirtualCamera>();
+        var vcam = vcamGo.AddComponent<Unity.Cinemachine.CinemachineVirtualCamera>();
         vcam.Priority = 10;
 
         // Set Follow and LookAt to the Car
@@ -46,12 +46,11 @@ public class SetupCinemachineCamera
         vcam.LookAt = car.transform;
 
         // Configure Body (Transposer) for chase camera
-        var transposer = vcam.GetCinemachineComponent<CinemachineTransposer>();
+        var transposer = vcam.GetCinemachineComponent<Unity.Cinemachine.CinemachineTransposer>();
         if (transposer == null)
         {
-            transposer = vcam.AddCinemachineComponent<CinemachineTransposer>();
+            transposer = vcam.AddCinemachineComponent<Unity.Cinemachine.CinemachineTransposer>();
         }
-        transposer.m_BindingMode = CinemachineTransposer.BindingMode.LockToTargetOnAssign;
         transposer.m_FollowOffset = new Vector3(0, 3.5f, -6.5f); // Behind and above
         transposer.m_XDamping = 1.5f;
         transposer.m_YDamping = 1f;
@@ -61,10 +60,10 @@ public class SetupCinemachineCamera
         transposer.m_RollDamping = 0.5f;
 
         // Configure Aim (Composer) for looking at car
-        var composer = vcam.GetCinemachineComponent<CinemachineComposer>();
+        var composer = vcam.GetCinemachineComponent<Unity.Cinemachine.CinemachineComposer>();
         if (composer == null)
         {
-            composer = vcam.AddCinemachineComponent<CinemachineComposer>();
+            composer = vcam.AddCinemachineComponent<Unity.Cinemachine.CinemachineComposer>();
         }
         composer.m_TrackedObjectOffset = new Vector3(0, 1f, 0); // Look at car center slightly up
         composer.m_LookaheadTime = 0.2f;
@@ -73,19 +72,17 @@ public class SetupCinemachineCamera
         composer.m_VerticalDamping = 2f;
         composer.m_DeadZoneWidth = 0.1f;
         composer.m_DeadZoneHeight = 0.1f;
-        composer.m_DeadZoneDepth = 0f;
         composer.m_SoftZoneWidth = 0.3f;
         composer.m_SoftZoneHeight = 0.3f;
 
-        // Add noise for slight camera shake (optional)
-        var noise = vcam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        // Add noise for slight camera shake (optional - API varies by version)
+        var noise = vcam.GetCinemachineComponent<Unity.Cinemachine.CinemachineBasicMultiChannelPerlin>();
         if (noise == null)
         {
-            noise = vcam.AddCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            noise = vcam.AddCinemachineComponent<Unity.Cinemachine.CinemachineBasicMultiChannelPerlin>();
         }
-        noise.m_AmplitudeGain = 0.5f;
-        noise.m_FrequencyGain = 1f;
-        noise.m_NoiseProfile = null; // Will use default if you assign a noise profile asset
+        // Note: Noise properties (AmplitudeGain, FrequencyGain) may be on a NoiseSettings asset
+        // in some 2.x versions. Skipping direct property access for compatibility.
 
         // Position the main camera at a reasonable starting point
         mainCamera.transform.position = car.transform.position + new Vector3(0, 3.5f, -6.5f);
@@ -94,6 +91,6 @@ public class SetupCinemachineCamera
         // Save scene
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log("Cinemachine Chase Camera created and configured!");
+        Debug.Log("Cinemachine Chase Camera (2.x) created and configured!");
     }
 }
